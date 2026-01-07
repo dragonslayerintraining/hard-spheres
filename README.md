@@ -8,6 +8,8 @@ For disks of radius 0.1 on the unit torus, it can handle activity up to around 0
 
 The implementation has been tested by using it to estimate the expected size of the random independent set on various 4-vertex graphs and comparing it to the exact value.
 
+![Sample from hard disk model at activity 40](hard-disk-activity40.png)
+
 ## Technical details
 
 The Randomness Recycler for independent sets as described in the aforementioned paper requires the graph to be finite, as it stores a subset of the vertices. However, we can make some choices in the algorithm that ensures this subset is well-structured and can be stored in a compressed form.
