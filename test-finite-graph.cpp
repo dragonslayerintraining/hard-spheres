@@ -10,14 +10,14 @@
 
 #include "randomness-recycler.hpp"
 
-class DiscreteGraph{
+class FiniteGraph{
   std::vector<std::vector<int>> adj;
 public:
   struct Vertex{int id;};
   friend bool operator<(Vertex p,Vertex q){
     return p.id<q.id;
   }
-  DiscreteGraph(int n,std::vector<std::pair<int,int> > edges):adj(n){
+  FiniteGraph(int n,std::vector<std::pair<int,int> > edges):adj(n){
     for(int i=0;i<n;i++){
       adj[i].push_back(i);
     }
@@ -49,10 +49,6 @@ public:
   }
 };
 
-
-/**********Tests below**********/
-
-
 template<class Graph,class RNG>
 double estimate_density(Graph graph,double activity,int num_trials,RNG& rng){
   int total_size=0;
@@ -70,23 +66,18 @@ void verify_density(Graph graph,double activity,int num_trials,RNG& rng,double t
   assert(std::abs(est-truth)<0.01);
 }
 
-void test_discrete(){
+int main(){
   //Estimate the expected size of the independent set by Monte Carlo and check that it is close to ground truth
-
   std::random_device rd;
   std::mt19937 rng(rd());
   
-  verify_density(DiscreteGraph(4,{}),1.0,1000000,rng,2.0);
-  verify_density(DiscreteGraph(4,{{0,1}}),1.0,1000000,rng,5.0/3);
-  verify_density(DiscreteGraph(4,{{0,1},{0,2},{1,2}}),1.0,1000000,rng,1.25);
-  verify_density(DiscreteGraph(4,{{0,1},{2,3}}),1.0,1000000,rng,4.0/3);
-  verify_density(DiscreteGraph(4,{{0,1},{1,2},{2,3}}),1.0,1000000,rng,1.25);
-  verify_density(DiscreteGraph(4,{{0,1},{0,2},{0,3}}),1.0,1000000,rng,13.0/9);
-  verify_density(DiscreteGraph(4,{{0,1},{1,2},{2,3},{3,0}}),1.0,1000000,rng,8.0/7);
-  verify_density(DiscreteGraph(4,{{0,1},{0,2},{0,3},{1,2},{1,3},{2,3}}),1.0,1000000,rng,0.80);
-  verify_density(DiscreteGraph(4,{{0,1},{1,2},{2,3},{3,0}}),2.0,10000,rng,24.0/17);
-}
-
-int main(){
-  test_discrete();
+  verify_density(FiniteGraph(4,{}),1.0,1000000,rng,2.0);
+  verify_density(FiniteGraph(4,{{0,1}}),1.0,1000000,rng,5.0/3);
+  verify_density(FiniteGraph(4,{{0,1},{0,2},{1,2}}),1.0,1000000,rng,1.25);
+  verify_density(FiniteGraph(4,{{0,1},{2,3}}),1.0,1000000,rng,4.0/3);
+  verify_density(FiniteGraph(4,{{0,1},{1,2},{2,3}}),1.0,1000000,rng,1.25);
+  verify_density(FiniteGraph(4,{{0,1},{0,2},{0,3}}),1.0,1000000,rng,13.0/9);
+  verify_density(FiniteGraph(4,{{0,1},{1,2},{2,3},{3,0}}),1.0,1000000,rng,8.0/7);
+  verify_density(FiniteGraph(4,{{0,1},{0,2},{0,3},{1,2},{1,3},{2,3}}),1.0,1000000,rng,0.80);
+  verify_density(FiniteGraph(4,{{0,1},{1,2},{2,3},{3,0}}),2.0,10000,rng,24.0/17);
 }
