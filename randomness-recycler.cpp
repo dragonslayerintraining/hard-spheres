@@ -4,6 +4,7 @@
 #include <ranges>
 #include <optional>
 #include <set>
+#include <vector>
 
 struct Point{double x,y;};
 
@@ -50,56 +51,61 @@ bool is_adj(Point p,Point q){
   return std::hypot(dx,dy)<range;
 }
 
-std::set<std::pair<double,Point> > independent_set;
+//Generate a random independent set distributed according to the hard core model on [0,1]x[0,1] where points of distance <range are adjacent
+std::vector<Point> random_independent_set(){
+  std::set<std::pair<double,Point> > independent_set;
 
-//"dents" in the activity: the ball of radius 2r around the point is reduced to this value
-std::set<std::pair<double,Point> > dents;
-double lambda=0;
-
-void try_add(Point p,double lam){
-  std::cerr<<"try_add"<<std::endl;
-  for(const auto& [l,q]:independent_set | std::views::reverse){
-    std::cerr<<l<<" "<<q<<std::endl;
-    if(is_adj(p,q)){
-      //q is highest labeled neighbor of p
-      independent_set.erase({l,q});
-      dents.insert({l,p});
-      dents.insert({0,q});
-      std::cerr<<"Recycling"<<std::endl;
-      return;
+  //"dents" in the activity:
+  // The ball of radius 2r around the point is reduced to this value
+  std::set<std::pair<double,Point> > dents;
+  double lambda=0;
+  auto try_add=[&](Point p,double lam){
+    std::cerr<<"try_add"<<std::endl;
+    for(const auto& [l,q]:independent_set | std::views::reverse){
+      std::cerr<<l<<" "<<q<<std::endl;
+      if(is_adj(p,q)){
+	//q is highest labeled neighbor of p
+	independent_set.erase({l,q});
+	dents.insert({l,p});
+	dents.insert({0,q});
+	std::cerr<<"Recycling"<<std::endl;
+	return;
+      }
     }
-  }
-  independent_set.insert({lam,p});
-}
-  
-int main(){
+    independent_set.insert({lam,p});
+  };
   while(true){
     while(dents.size()>=1){
       //lift the lowest dent
       std::pair<double,Point> lowest_dent=*dents.begin();
       dents.erase(dents.begin());
       
-      double next_lambda=(dents.size()>=1)?dents.begin()->first:lambda;
-      double t=lowest_dent.first+next_for_disk(rng);
-      if(t>next_lambda){
+      lowest_dent.first+=next_for_disk(rng);
+      if(lowest_dent.first>((dents.size()>=1)?dents.begin()->first:lambda)){
 	continue;
       }
-      lowest_dent.first=t;
       dents.insert(lowest_dent);
       Point p = random_point_in_region();
       try_add(p,lowest_dent.first);
     }
     //no dents
-    double t=lambda+next_for_region(rng);
-    if(t>target_lambda){
-      lambda=target_lambda;
+    lambda+=next_for_region(rng);
+    if(lambda>target_lambda){
       break;
     }
-    lambda=t;
     Point p = random_point_in_region();
     try_add(p,lambda);
   }
+  std::vector<Point> output;
   for(const auto& [l,p]:independent_set){
+    output.push_back(p);
+  }
+  return output;
+}
+
+int main(){
+  std::vector independent_set=random_independent_set();
+  for(Point p:independent_set){
     std::cout<<p.x<<" "<<p.y<<std::endl;
   }
 }
