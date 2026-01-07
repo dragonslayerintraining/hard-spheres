@@ -6,7 +6,7 @@ The algorithm takes in a graph and activity and outputs a random independent set
 
 For disks of radius 0.1 on the unit torus, it can handle activity up to around 0.35 easily, but drastically slows down beyond that.
 
-The implementation has been tested by using it to estimate the expected size of the random independent set on various 4-vertex graphs and comparing it to the exact value.
+The implementation has been tested by using it to estimate the expected size of the random independent set on various 4-vertex graphs and comparing it to the true value.
 
 ![Sample from hard disk model](images/hard-disk-radius0.1-activity35.png)
 
