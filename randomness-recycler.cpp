@@ -17,7 +17,7 @@ std::ostream& operator<<(std::ostream& stream,const Point& p){
 
 /* region is [0,1]x[0,1] */
 
-const double target_lambda = 10.0;
+const double target_lambda = 100.0;
 const double radius = 0.1;
 
 std::random_device rd;
@@ -83,6 +83,7 @@ int main(){
 	continue;
       }
       lowest_dent.first=t;
+      dents.insert(lowest_dent);
       Point p = random_point_in_region();
       try_add(p,lowest_dent.first);
     }
