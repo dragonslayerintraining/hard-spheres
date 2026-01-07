@@ -5,7 +5,44 @@
 #include <optional>
 #include <set>
 #include <vector>
+#include <cassert>
+#include <algorithm>
 
+class DiscreteGraph{
+  std::vector<std::vector<int>> adj;
+public:
+  struct Vertex{int id;};
+  DiscreteGraph(int n,std::vector<std::pair<int,int> > edges):adj(n){
+    for(int i=0;i<n;i++){
+      adj[i].push_back(i);
+    }
+    for(auto e:edges){
+      adj[e.first].push_back(e.second);
+      adj[e.second].push_back(e.first);
+    }
+  }
+  template<class RNG>
+  Vertex random_vertex(RNG& rng) const{
+    assert(!adj.empty());
+    std::uniform_int_distribution<> distr(0,adj.size()-1);
+    return Vertex{distr(rng)};
+  }
+  double size() const{
+    return adj.size();
+  }
+  //Random vertex in closed neighborhood
+  template<class RNG>
+  Vertex random_neighbor(Vertex p,RNG& rng) const{
+    std::uniform_int_distribution<> distr(0,adj[p.id].size()-1);
+    return Vertex{adj[p.id][distr(rng)]};
+  }
+  double degree(Vertex p) const{
+    return adj[p.id].size();
+  }
+  bool is_adj(Vertex p,Vertex q) const{
+    return std::find(adj[p.id].begin(),adj[p.id].end(),q.id)!=adj[p.id].end();
+  }
+};
 
 //Vertex set is [0,1]x[0,1]
 //Two vertices are adjacent if their distance is less than the range (2r)
