@@ -45,6 +45,7 @@ public:
     while(y>0) y-=1;
     return Vertex{x,y};
   }
+  //measure of neighborhood
   double degree(Vertex p) const{
     return std::numbers::pi*range*range;
   }
@@ -59,32 +60,26 @@ public:
 };
 
 //Generate a random independent set distributed according to the hard core model on [0,1]x[0,1] where points of distance <range are adjacent
-template<class Graph>
-std::vector<typename Graph::Vertex> random_independent_set(const Graph& graph,const double target_lambda){
+template<class Graph,class RNG>
+std::vector<typename Graph::Vertex> random_independent_set(const Graph& graph,const double target_lambda,RNG rng){
   std::set<std::pair<double,typename Graph::Vertex> > independent_set;
 
   //"dents" in the activity:
-  // The ball of radius 2r around the point is reduced to this value
+  // The activity in the neighborhood of each point is reduced to the value
   std::set<std::pair<double,typename Graph::Vertex> > dents;
   double lambda=0;
   auto try_add=[&](Graph::Vertex p,double lam){
-    std::cerr<<"try_add"<<std::endl;
     for(const auto& [l,q]:independent_set | std::views::reverse){
-      std::cerr<<l<<" "<<q<<std::endl;
       if(graph.is_adj(p,q)){
 	//q is highest labeled neighbor of p
 	independent_set.erase({l,q});
 	dents.insert({l,p});
 	dents.insert({0,q});
-	std::cerr<<"Recycling"<<std::endl;
 	return;
       }
     }
     independent_set.insert({lam,p});
   };
-  
-  std::random_device rd;
-  std::mt19937 rng(rd());
   while(true){
     while(dents.size()>=1){
       //lift the lowest dent
@@ -117,8 +112,10 @@ std::vector<typename Graph::Vertex> random_independent_set(const Graph& graph,co
 }
 
 int main(){
+  std::random_device rd;
+  std::mt19937 rng(rd());
   HardDiskGraph graph(0.1);//discs of radius 0.1 on [0,1]x[0,1]
-  std::vector<typename HardDiskGraph::Vertex> independent_set=random_independent_set(graph,100.0);
+  std::vector<typename HardDiskGraph::Vertex> independent_set=random_independent_set(graph,100.0,rng);
   for(HardDiskGraph::Vertex p:independent_set){
     std::cout<<p.x<<" "<<p.y<<std::endl;
   }
