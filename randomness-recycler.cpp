@@ -108,14 +108,14 @@ std::vector<typename Graph::Vertex> random_independent_set(const Graph& graph,co
   //"dents" in the activity:
   // The activity at most places is current_lambda
   // The activity in the neighborhood of each vertex here is reduced to the corresponding value
-  std::set<std::pair<double,typename Graph::Vertex> > dents;
+  std::vector<std::pair<double,typename Graph::Vertex> > dents;
   auto try_add=[&](Graph::Vertex p,double lam){
     for(const auto& [l,q]:independent_set | std::views::reverse){
       if(graph.is_adj(p,q)){
 	//q is highest labeled neighbor of p
 	independent_set.erase({l,q});
-	dents.insert({l,p});
-	dents.insert({0,q});
+	dents.push_back({l,p});
+	dents.push_back({0,q});
 	/*
 	//REJECTION
 	independent_set.clear();
@@ -129,18 +129,28 @@ std::vector<typename Graph::Vertex> random_independent_set(const Graph& graph,co
   };
   while(true){
     while(dents.size()>=1){
-      //lift the lowest dent
-      std::pair<double,typename Graph::Vertex> lowest_dent=*dents.begin();
-      dents.erase(dents.begin());
+      //dent centered at p down to l
+      auto [l,p]=dents.back();
+      dents.pop_back();
       
-      std::exponential_distribution<> next_for_vertex(graph.degree(lowest_dent.second));
-      lowest_dent.first+=next_for_vertex(rng);
-      if(lowest_dent.first>((dents.size()>=1)?dents.begin()->first:current_lambda)){
+      std::exponential_distribution<> next_for_vertex(graph.degree(p));
+      l+=next_for_vertex(rng);
+      if(l>current_lambda){
 	continue;
       }
-      dents.insert(lowest_dent);
-      typename Graph::Vertex p = graph.random_neighbor(lowest_dent.second,rng);
-      try_add(p,lowest_dent.first);
+      dents.push_back({l,p});
+      typename Graph::Vertex q = graph.random_neighbor(p,rng);
+      
+      bool ignore=false;
+      for(const auto& [k,r]:dents){
+	if(graph.is_adj(q,r)&&l>k){
+	  ignore=true;
+	  break;
+	}
+      }
+      if(!ignore){
+	try_add(q,l);
+      }
     }
     //no dents
     std::exponential_distribution<> next_for_region(graph.size());
@@ -173,18 +183,14 @@ int main(){
 int main(){
   std::random_device rd;
   std::mt19937 rng(rd());
-  //DiscreteGraph graph(4,{{0,1},{1,2},{2,3},{3,0}});//wrong
-  //DiscreteGraph graph(4,{});
-  //DiscreteGraph graph(4,{{0,1}});
-  //DiscreteGraph graph(4,{{0,1},{0,2},{1,2}});
-  //DiscreteGraph graph(4,{{0,1},{2,3}});
-  //DiscreteGraph graph(4,{{0,1},{1,2},{2,3}});//wrong
-  DiscreteGraph graph(4,{{0,1},{0,2},{0,3}});//wrong
-  //DiscreteGraph graph(4,{{0,1},{0,2},{0,3},{1,2},{1,3},{2,3}});
-  for(int i=0;i<4;i++){
-    std::cout<<graph.degree(DiscreteGraph::Vertex{i});
-  }
-  return 0;
+  //DiscreteGraph graph(4,{});//2.0
+  //DiscreteGraph graph(4,{{0,1}});//1.666
+  //DiscreteGraph graph(4,{{0,1},{0,2},{1,2}});//1.25
+  //DiscreteGraph graph(4,{{0,1},{2,3}});//1.333
+  //DiscreteGraph graph(4,{{0,1},{1,2},{2,3}});//1.25
+  //DiscreteGraph graph(4,{{0,1},{0,2},{0,3}});//1.44
+  //DiscreteGraph graph(4,{{0,1},{1,2},{2,3},{3,0}});//1.143
+  DiscreteGraph graph(4,{{0,1},{0,2},{0,3},{1,2},{1,3},{2,3}});//0.80
   int total_size=0;
   for(int i=1;i<=10000000;i++){
     std::vector<typename DiscreteGraph::Vertex> independent_set=random_independent_set(graph,1.0,rng);
