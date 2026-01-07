@@ -1,6 +1,6 @@
 # Hard spheres
 
-randomness-recycler.cpp contains an implementation of a perfect sampling algorithm for the 2D hard sphere model, based on a variant of the randomness recycler (https://arxiv.org/abs/math/0009242).
+randomness-recycler.cpp contains an implementation of a perfect sampling algorithm for the 2D hard sphere model, based on a variant of the Randomness Recycler (https://arxiv.org/abs/math/0009242).
 
 The algorithm takes in a graph and activity and outputs a random independent set from the hard core model on this graph at this activity.
 
