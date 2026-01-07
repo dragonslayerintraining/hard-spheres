@@ -12,6 +12,8 @@ The implementation has been tested by using it to estimate the expected size of 
 
 ## Example usage
 
+Make sure you have Python 3 and Matplotlib installed.
+
 ```
 make
 ./hard-disk-perfect-sampler 80 0.05 |python3 plot.py 0.05
