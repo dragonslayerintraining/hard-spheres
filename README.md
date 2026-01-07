@@ -18,4 +18,4 @@ In the ``recycle'' step, we will need to remove some vertices. We can do so in a
 
 The graph is given as a set of oracles that return: the total measure of the graph, a random vertex of the graph, the measure of the neighborhood of a given vertex, a random neighbor of a given vertex, and whether two given vertices are adjacent. This allows the graph to be infinite, which is the case for the hard disk model. For the hard disk model, the vertex set is the torus [0,1]x[0,1], and two vertices are considered adjacent if their distance is less than twice the radius of the disks.
 
-I believe the analysis that the algorithm takes a linear number of steps when \lambda<1/(2\Delta) can be adapted, with \Delta replaced by the largest measure of the neighborhood of a point. However, each step is not longer constant time due to the complex representation of the vertex set.
+I believe the analysis that the algorithm takes a linear number of steps when \lambda<1/(2\Delta) can be adapted, with \Delta replaced by the largest measure of the neighborhood of a point. However, each step is not longer constant time due to the complex representation of the subset of vertices.
