@@ -12,6 +12,9 @@ class DiscreteGraph{
   std::vector<std::vector<int>> adj;
 public:
   struct Vertex{int id;};
+  friend bool operator<(Vertex p,Vertex q){
+    return p.id<q.id;
+  }
   DiscreteGraph(int n,std::vector<std::pair<int,int> > edges):adj(n){
     for(int i=0;i<n;i++){
       adj[i].push_back(i);
@@ -113,6 +116,12 @@ std::vector<typename Graph::Vertex> random_independent_set(const Graph& graph,co
 	independent_set.erase({l,q});
 	dents.insert({l,p});
 	dents.insert({0,q});
+	/*
+	//REJECTION
+	independent_set.clear();
+	dents.clear();
+	current_lambda=0;
+	*/
 	return;
       }
     }
@@ -149,6 +158,7 @@ std::vector<typename Graph::Vertex> random_independent_set(const Graph& graph,co
   return output;
 }
 
+/*
 int main(){
   std::random_device rd;
   std::mt19937 rng(rd());
@@ -156,5 +166,35 @@ int main(){
   std::vector<typename HardDiskGraph::Vertex> independent_set=random_independent_set(graph,100.0,rng);
   for(HardDiskGraph::Vertex p:independent_set){
     std::cout<<p.x<<" "<<p.y<<std::endl;
+  }
+}
+*/
+
+int main(){
+  std::random_device rd;
+  std::mt19937 rng(rd());
+  //DiscreteGraph graph(4,{{0,1},{1,2},{2,3},{3,0}});//wrong
+  //DiscreteGraph graph(4,{});
+  //DiscreteGraph graph(4,{{0,1}});
+  //DiscreteGraph graph(4,{{0,1},{0,2},{1,2}});
+  //DiscreteGraph graph(4,{{0,1},{2,3}});
+  //DiscreteGraph graph(4,{{0,1},{1,2},{2,3}});//wrong
+  DiscreteGraph graph(4,{{0,1},{0,2},{0,3}});//wrong
+  //DiscreteGraph graph(4,{{0,1},{0,2},{0,3},{1,2},{1,3},{2,3}});
+  for(int i=0;i<4;i++){
+    std::cout<<graph.degree(DiscreteGraph::Vertex{i});
+  }
+  return 0;
+  int total_size=0;
+  for(int i=1;i<=10000000;i++){
+    std::vector<typename DiscreteGraph::Vertex> independent_set=random_independent_set(graph,1.0,rng);
+    total_size+=independent_set.size();
+    if(i%100000==0){
+      std::cout<<"Iteration "<<i<<std::endl;
+      for(DiscreteGraph::Vertex p:independent_set){
+	std::cout<<p.id<<std::endl;
+      }
+      std::cout<<"Average size: "<<(double)total_size/i<<std::endl;
+    }
   }
 }
