@@ -8,7 +8,7 @@ For disks of radius 0.1 on the unit torus, it can handle activity up to around 0
 
 The implementation has been tested by using it to estimate the expected size of the random independent set on various 4-vertex graphs and comparing it to the exact value.
 
-![Sample from hard disk model](images/hard-disk-radius0.05-activity80.png)
+![Sample from hard disk model](images/hard-disk-radius0.1-activity35.png)
 
 ## Example usage
 
@@ -16,10 +16,10 @@ Make sure you have Python 3 and Matplotlib installed.
 
 ```
 make
-./hard-disk-perfect-sampler 80 0.05 |python3 plot.py 0.05
+./hard-disk-perfect-sampler 35 0.1 |python3 plot.py 0.1
 ```
 
-This generates a sample from the hard disk model with disks of radius 0.05 at activity 80, and plots it.
+This generates a sample from the hard disk model with disks of radius 0.1 at activity 35, and plots it.
 
 ## Technical details
 
