@@ -4,7 +4,7 @@ This repository contains an implementation of a perfect sampling algorithm for t
 
 The algorithm takes in a graph and activity and outputs a random independent set from the hard core model on this graph at this activity.
 
-For disks of radius 0.1 on the unit torus, it can handle activity up to around 0.35 easily, but drastically slows down beyond that.
+For disks of radius 0.1 on the unit torus, it can handle activity up to around 35 easily, but drastically slows down beyond that.
 
 The implementation has been tested by using it to estimate the expected size of the random independent set on various 4-vertex graphs and comparing it to the true value.
 
