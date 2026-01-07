@@ -114,8 +114,10 @@ std::vector<typename Graph::Vertex> random_independent_set(const Graph& graph,co
       if(graph.is_adj(p,q)){
 	//q is highest labeled neighbor of p
 	independent_set.erase({l,q});
-	dents.push_back({l,p});
+	
 	dents.push_back({0,q});
+	dents.push_back({l,p});
+	//std::cerr<<"Recycle "<<dents.size()<<std::endl;
 	/*
 	//REJECTION
 	independent_set.clear();
@@ -158,6 +160,7 @@ std::vector<typename Graph::Vertex> random_independent_set(const Graph& graph,co
     if(current_lambda>target_lambda){
       break;
     }
+    std::cerr<<"current_lambda: "<<current_lambda<<std::endl;
     typename Graph::Vertex p = graph.random_vertex(rng);
     try_add(p,current_lambda);
   }
@@ -168,17 +171,21 @@ std::vector<typename Graph::Vertex> random_independent_set(const Graph& graph,co
   return output;
 }
 
-/*
+
 int main(){
   std::random_device rd;
   std::mt19937 rng(rd());
-  HardDiskGraph graph(0.1);//discs of radius 0.1 on [0,1]x[0,1]
-  std::vector<typename HardDiskGraph::Vertex> independent_set=random_independent_set(graph,100.0,rng);
+  HardDiskGraph graph(0.1);//discs of radius 0.1 on torus [0,1]x[0,1]
+  //Time jumps up drastically around lambda=35
+  std::vector<typename HardDiskGraph::Vertex> independent_set=random_independent_set(graph,35.0,rng);
   for(HardDiskGraph::Vertex p:independent_set){
     std::cout<<p.x<<" "<<p.y<<std::endl;
   }
 }
-*/
+
+
+/**********Tests below**********/
+
 
 template<class Graph,class RNG>
 double estimate_density(Graph graph,double activity,int num_trials,RNG& rng){
@@ -213,7 +220,8 @@ void test_discrete(){
   verify_density(DiscreteGraph(4,{{0,1},{0,2},{0,3},{1,2},{1,3},{2,3}}),1.0,1000000,rng,0.80);
   verify_density(DiscreteGraph(4,{{0,1},{1,2},{2,3},{3,0}}),2.0,10000,rng,24.0/17);
 }
-
+/*
 int main(){
   test_discrete();
 }
+*/
