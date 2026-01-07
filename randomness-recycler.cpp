@@ -18,12 +18,12 @@ std::ostream& operator<<(std::ostream& stream,const Point& p){
 /* region is [0,1]x[0,1] */
 
 const double target_lambda = 100.0;
-const double radius = 0.1;
+const double range = 2*0.1;
 
 std::random_device rd;
 std::mt19937 rng(rd());
 
-std::exponential_distribution<> next_for_disk(4*std::numbers::pi*radius*radius);
+std::exponential_distribution<> next_for_disk(std::numbers::pi*range*range);
 std::exponential_distribution<> next_for_region(1);
 
 Point random_point_in_region(){
@@ -34,18 +34,20 @@ Point random_point_in_region(){
 }
 
 //https://mathworld.wolfram.com/DiskPointPicking.html
+//Output a uniformly random point from B(p,2r)
 Point random_point_in_disk(Point p){
   std::uniform_real_distribution<> distr(0,1);
-  double r=std::sqrt(distr(rng));
+  double s=std::sqrt(distr(rng));
   double theta=distr(rng)*2*std::numbers::pi;
-  return Point{p.x+r*std::cos(theta),p.y+r*std::sin(theta)};
+  return Point{p.x+range*s*std::cos(theta),p.y+range*s*std::sin(theta)};
 }
 
+//Returns whether two points are adjacent (i.e. within 2r on the torus)
 bool is_adj(Point p,Point q){
   double dx=std::abs(p.x-q.x),dy=std::abs(p.y-q.y);
   dx=std::min(dx,1-dx);
   dy=std::min(dy,1-dy);
-  return std::hypot(dx,dy)<2*radius;
+  return std::hypot(dx,dy)<range;
 }
 
 std::set<std::pair<double,Point> > independent_set;
@@ -98,6 +100,6 @@ int main(){
     try_add(p,lambda);
   }
   for(const auto& [l,p]:independent_set){
-    std::cout<<p.x<<" "<<p.y<<" "<<l<<std::endl;
+    std::cout<<p.x<<" "<<p.y<<std::endl;
   }
 }
