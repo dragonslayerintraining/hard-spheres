@@ -1,12 +1,14 @@
 # Hard spheres
 
-randomness-recycler.cpp contains an implementation of a perfect sampling algorithm for the 2D hard sphere model, based on a variant of the Randomness Recycler (https://arxiv.org/abs/math/0009242).
+This repository contains an implementation of a perfect sampling algorithm for the 2D hard sphere model, based on a variant of the Randomness Recycler (https://arxiv.org/abs/math/0009242).
 
 The algorithm takes in a graph and activity and outputs a random independent set from the hard core model on this graph at this activity.
 
 For disks of radius 0.1 on the unit torus, it can handle activity up to around 0.35 easily, but drastically slows down beyond that.
 
 The implementation has been tested by using it to estimate the expected size of the random independent set on various 4-vertex graphs and comparing it to the exact value.
+
+![Sample from hard disk model](images/hard-disk-radius0.05-activity80.png)
 
 ## Example usage
 
@@ -16,9 +18,6 @@ make
 ```
 
 This generates a sample from the hard disk model with disks of radius 0.05 at activity 80, and plots it.
-
-
-![Sample from hard disk model](images/sample.png)
 
 ## Technical details
 
