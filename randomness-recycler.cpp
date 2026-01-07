@@ -7,18 +7,19 @@
 #include <vector>
 
 
+//Vertex set is [0,1]x[0,1]
+//Two vertices are adjacent if their distance is less than the range (2r)
 class HardDiskGraph{
   double range;
 public:
   struct Vertex{double x,y;};
+  //Comparison is used to store vertices in a ordered set, but is otherwise unused by the algorithm
   friend bool operator<(Vertex p,Vertex q){
     return std::make_pair(p.x,p.y)<std::make_pair(q.x,q.y);
   }
-  friend std::ostream& operator<<(std::ostream& stream,const Vertex& p){
-    return stream<<"("<<p.x<<","<<p.y<<")";
-  }
   HardDiskGraph(double radius):range(radius*2){
   }
+  //Output a uniformly random point from [0,1]x[0,1]
   template<class RNG>
   Vertex random_vertex(RNG& rng) const{
     std::uniform_real_distribution<> distr(0,1);
@@ -30,8 +31,8 @@ public:
   double size() const{
     return 1.0;
   }
-  //https://mathworld.wolfram.com/DiskVertexPicking.html
   //Output a uniformly random point from B(p,2r)
+  //https://mathworld.wolfram.com/DiskVertexPicking.html
   template<class RNG>
   Vertex random_neighbor(Vertex p,RNG& rng) const{
     std::uniform_real_distribution<> distr(0,1);
@@ -49,7 +50,6 @@ public:
   double degree(Vertex p) const{
     return std::numbers::pi*range*range;
   }
-
   //Returns whether two points are adjacent (i.e. within 2r on the torus)
   bool is_adj(Vertex p,Vertex q) const{
     double dx=std::abs(p.x-q.x),dy=std::abs(p.y-q.y);
@@ -59,15 +59,16 @@ public:
   }
 };
 
-//Generate a random independent set distributed according to the hard core model on [0,1]x[0,1] where points of distance <range are adjacent
+//Generate a random independent set distributed according to the hard core model with activity target_lambda
 template<class Graph,class RNG>
-std::vector<typename Graph::Vertex> random_independent_set(const Graph& graph,const double target_lambda,RNG rng){
+std::vector<typename Graph::Vertex> random_independent_set(const Graph& graph,const double target_lambda,RNG& rng){
   std::set<std::pair<double,typename Graph::Vertex> > independent_set;
-
+  
+  double current_lambda=0;
   //"dents" in the activity:
-  // The activity in the neighborhood of each point is reduced to the value
+  // The activity at most places is current_lambda
+  // The activity in the neighborhood of each vertex here is reduced to the corresponding value
   std::set<std::pair<double,typename Graph::Vertex> > dents;
-  double lambda=0;
   auto try_add=[&](Graph::Vertex p,double lam){
     for(const auto& [l,q]:independent_set | std::views::reverse){
       if(graph.is_adj(p,q)){
@@ -88,7 +89,7 @@ std::vector<typename Graph::Vertex> random_independent_set(const Graph& graph,co
       
       std::exponential_distribution<> next_for_vertex(graph.degree(lowest_dent.second));
       lowest_dent.first+=next_for_vertex(rng);
-      if(lowest_dent.first>((dents.size()>=1)?dents.begin()->first:lambda)){
+      if(lowest_dent.first>((dents.size()>=1)?dents.begin()->first:current_lambda)){
 	continue;
       }
       dents.insert(lowest_dent);
@@ -97,12 +98,12 @@ std::vector<typename Graph::Vertex> random_independent_set(const Graph& graph,co
     }
     //no dents
     std::exponential_distribution<> next_for_region(graph.size());
-    lambda+=next_for_region(rng);
-    if(lambda>target_lambda){
+    current_lambda+=next_for_region(rng);
+    if(current_lambda>target_lambda){
       break;
     }
     typename Graph::Vertex p = graph.random_vertex(rng);
-    try_add(p,lambda);
+    try_add(p,current_lambda);
   }
   std::vector<typename Graph::Vertex> output;
   for(const auto& [l,p]:independent_set){
