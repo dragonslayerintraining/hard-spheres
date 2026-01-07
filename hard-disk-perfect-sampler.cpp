@@ -75,7 +75,7 @@ int main(int argc,char *argv[]){
   }
   std::random_device rd;
   std::mt19937 rng(rd());
-  HardDiskGraph graph(radius);//discs of radius (0.1) on torus [0,1]x[0,1]
+  HardDiskGraph graph(radius);//disks of radius (0.1) on torus [0,1]x[0,1]
   //Runtime jumps up drastically around activity=35
   std::vector<typename HardDiskGraph::Vertex> independent_set=random_independent_set(graph,activity,rng);
   for(HardDiskGraph::Vertex p:independent_set){
