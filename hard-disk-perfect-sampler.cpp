@@ -64,12 +64,20 @@ public:
 
 
 
-int main(){
+int main(int argc,char *argv[]){
+  double activity=35;
+  double radius=0.1;
+  if(argc>=2){
+    activity=std::stod(argv[1]);
+  }
+  if(argc>=3){
+    radius=std::stod(argv[2]);
+  }
   std::random_device rd;
   std::mt19937 rng(rd());
-  HardDiskGraph graph(0.1);//discs of radius 0.1 on torus [0,1]x[0,1]
-  //Time jumps up drastically around lambda=35
-  std::vector<typename HardDiskGraph::Vertex> independent_set=random_independent_set(graph,35.0,rng);
+  HardDiskGraph graph(radius);//discs of radius (0.1) on torus [0,1]x[0,1]
+  //Runtime jumps up drastically around activity=35
+  std::vector<typename HardDiskGraph::Vertex> independent_set=random_independent_set(graph,activity,rng);
   for(HardDiskGraph::Vertex p:independent_set){
     std::cout<<p.x<<" "<<p.y<<std::endl;
   }
