@@ -23,6 +23,6 @@ plt.xlabel("x")
 plt.ylabel("y")
 plt.title("Sample from hard disk model")
 
-#plt.savefig("plot.png")
+plt.savefig("sample.png")
 plt.plot()
 plt.show()
